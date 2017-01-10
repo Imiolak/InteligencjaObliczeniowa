@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-public class Emas<S extends Solution<S>> extends AbstractEmas<S, List<S>, EmasAgent<S>> {
+public class Emas<S extends Solution<?>> extends AbstractEmas<S, List<S>, EmasAgent<S>> {
 
     private final Problem<S> problem;
     private final int maxIterations;

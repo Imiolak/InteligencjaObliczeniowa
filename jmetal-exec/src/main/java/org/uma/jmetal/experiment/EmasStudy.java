@@ -1,6 +1,9 @@
 package org.uma.jmetal.experiment;
 
 import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.impl.AbstractEmasParameters;
+import org.uma.jmetal.algorithm.multiobjective.emas.EmasBuilder;
+import org.uma.jmetal.algorithm.multiobjective.emas.EmasParameters;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
@@ -31,12 +34,15 @@ public class EmasStudy {
         if (args.length != 1) {
             throw new JMetalException("Missing argument: experiment base directory") ;
         }
-        String experimentBaseDirectory = args[0] ;
+        String experimentBaseDirectory = args[0];
 
         List<Problem<DoubleSolution>> problemList = Arrays.asList(new ZDT1(), new ZDT2(),
-                new ZDT3(), new ZDT4(), new ZDT6()) ;
+                new ZDT3(), new ZDT4(), new ZDT6());
 
-        List<TaggedAlgorithm<List<DoubleSolution>>> algorithmList = configureAlgorithmList(problemList, INDEPENDENT_RUNS) ;
+        AbstractEmasParameters emasParameters = new EmasParameters(5, 1, 0, 9, 15);
+
+        List<TaggedAlgorithm<List<DoubleSolution>>> algorithmList = configureAlgorithmList(problemList,
+                INDEPENDENT_RUNS, emasParameters);
 
         List<String> referenceFrontFileNames = Arrays.asList("ZDT1.pf", "ZDT2.pf", "ZDT3.pf", "ZDT4.pf", "ZDT6.pf") ;
 
@@ -57,11 +63,11 @@ public class EmasStudy {
                         .build();
 
         new ExecuteAlgorithms<>(experiment).run();
-        new ComputeQualityIndicators<>(experiment).run() ;
-        new GenerateLatexTablesWithStatistics(experiment).run() ;
-        new GenerateWilcoxonTestTablesWithR<>(experiment).run() ;
+        new ComputeQualityIndicators<>(experiment).run();
+        new GenerateLatexTablesWithStatistics(experiment).run();
+        new GenerateWilcoxonTestTablesWithR<>(experiment).run();
         new GenerateFriedmanTestTables<>(experiment).run();
-        new GenerateBoxplotsWithR<>(experiment).setRows(3).setColumns(3).run() ;
+        new GenerateBoxplotsWithR<>(experiment).setRows(3).setColumns(3).run();
     }
 
     /**
@@ -71,18 +77,21 @@ public class EmasStudy {
      * same algorithm are defined.
      *
      * @param problemList
+     * @param emasParameters
      * @return
      */
     static List<TaggedAlgorithm<List<DoubleSolution>>> configureAlgorithmList(List<Problem<DoubleSolution>> problemList,
-                                                                              int independentRuns) {
+                                                                              int independentRuns, AbstractEmasParameters emasParameters) {
         List<TaggedAlgorithm<List<DoubleSolution>>> algorithms = new ArrayList<>() ;
 
         for (int run = 0; run < independentRuns; run++) {
 
             for (int i = 0; i < problemList.size(); i++) {
-                Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i), new SBXCrossover(1.0, 5),
+                Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i),
+                        emasParameters,
+                        new SBXCrossover(1.0, 5),
                         new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 10.0),
-                        new DominanceComparator<DoubleSolution>())
+                        new DominanceComparator<>())
                         .setMaxIterations(25000)
                         .setPopulationSize(100)
                         .build();
@@ -91,9 +100,11 @@ public class EmasStudy {
             }
 
             for (int i = 0; i < problemList.size(); i++) {
-                Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i), new SBXCrossover(1.0, 20.0),
+                Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i),
+                        emasParameters,
+                        new SBXCrossover(1.0, 20.0),
                         new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 20.0),
-                        new DominanceComparator<DoubleSolution>())
+                        new DominanceComparator<>())
                         .setMaxIterations(25000)
                         .setPopulationSize(100)
                         .build();
@@ -102,9 +113,11 @@ public class EmasStudy {
             }
 
             for (int i = 0; i < problemList.size(); i++) {
-                Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i), new SBXCrossover(1.0, 40.0),
+                Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i),
+                        emasParameters,
+                        new SBXCrossover(1.0, 40.0),
                         new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 40.0),
-                        new DominanceComparator<DoubleSolution>())
+                        new DominanceComparator<>())
                         .setMaxIterations(25000)
                         .setPopulationSize(100)
                         .build();
@@ -113,9 +126,11 @@ public class EmasStudy {
             }
 
             for (int i = 0; i < problemList.size(); i++) {
-                Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i), new SBXCrossover(1.0, 80.0),
+                Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i),
+                        emasParameters,
+                        new SBXCrossover(1.0, 80.0),
                         new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 80.0),
-                        new DominanceComparator<DoubleSolution>())
+                        new DominanceComparator<>())
                         .setMaxIterations(25000)
                         .setPopulationSize(100)
                         .build();

@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 /**
  * Created by macie on 22-Nov-16.
  */
-public class EmasAgent<S extends Solution<S>> extends AbstractEmasAgent<S> {
+public class EmasAgent<S extends Solution<?>> extends AbstractEmasAgent<S> {
 
     private final Problem<S> problem;
     private final CrossoverOperator<S> crossoverOperator;
