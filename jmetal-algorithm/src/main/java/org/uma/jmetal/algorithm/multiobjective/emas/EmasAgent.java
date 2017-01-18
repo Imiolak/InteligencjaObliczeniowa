@@ -26,12 +26,7 @@ public class EmasAgent<S extends Solution<?>> extends AbstractEmasAgent<S> {
     protected EmasAgent(Problem<S> problem, AbstractEmasParameters parameters, CrossoverOperator<S> crossoverOperator,
                         MutationOperator<S> mutationOperator, Comparator<S> solutionComparator) {
 
-        super(problem.createSolution(), parameters);
-
-        this.problem = problem;
-        this.crossoverOperator = crossoverOperator;
-        this.mutationOperator = mutationOperator;
-        this.solutionComparator = solutionComparator;
+        this(problem, parameters, crossoverOperator, mutationOperator, solutionComparator, problem.createSolution());
     }
 
     protected EmasAgent(Problem<S> problem, AbstractEmasParameters parameters, CrossoverOperator<S> crossoverOperator,
@@ -43,6 +38,8 @@ public class EmasAgent<S extends Solution<?>> extends AbstractEmasAgent<S> {
         this.crossoverOperator = crossoverOperator;
         this.mutationOperator = mutationOperator;
         this.solutionComparator = solutionComparator;
+
+        this.problem.evaluate(this.solution);
     }
 
     @Override

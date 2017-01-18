@@ -8,6 +8,9 @@ import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.problem.Problem;
+import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
+import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ2;
+import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ3;
 import org.uma.jmetal.problem.multiobjective.zdt.*;
 import org.uma.jmetal.qualityindicator.impl.*;
 import org.uma.jmetal.qualityindicator.impl.hypervolume.PISAHypervolume;
@@ -28,7 +31,7 @@ import java.util.List;
  * Created by macie on 06-Jan-17.
  */
 public class EmasStudy {
-    private static final int INDEPENDENT_RUNS = 25 ;
+    private static final int INDEPENDENT_RUNS = 5;
 
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
@@ -36,15 +39,16 @@ public class EmasStudy {
         }
         String experimentBaseDirectory = args[0];
 
-        List<Problem<DoubleSolution>> problemList = Arrays.asList(new ZDT1(), new ZDT2(),
-                new ZDT3(), new ZDT4(), new ZDT6());
+        List<Problem<DoubleSolution>> problemList = Arrays.asList(new DTLZ1(7, 2),
+                new DTLZ2(12, 2),
+                new DTLZ3(12, 2));
 
         AbstractEmasParameters emasParameters = new EmasParameters(5, 1, 0, 9, 15);
 
         List<TaggedAlgorithm<List<DoubleSolution>>> algorithmList = configureAlgorithmList(problemList,
                 INDEPENDENT_RUNS, emasParameters);
 
-        List<String> referenceFrontFileNames = Arrays.asList("ZDT1.pf", "ZDT2.pf", "ZDT3.pf", "ZDT4.pf", "ZDT6.pf") ;
+        List<String> referenceFrontFileNames = Arrays.asList("DTLZ1.2D.pf", "DTLZ2.2D.pf", "DTLZ3.2D.pf");
 
         Experiment<DoubleSolution, List<DoubleSolution>> experiment =
                 new ExperimentBuilder<DoubleSolution, List<DoubleSolution>>("EMASStudy")
@@ -59,7 +63,7 @@ public class EmasStudy {
                                 new Epsilon<>(), new Spread<>(), new GenerationalDistance<>(), new PISAHypervolume<>(),
                                 new InvertedGenerationalDistance<>(), new InvertedGenerationalDistancePlus<>()))
                         .setIndependentRuns(INDEPENDENT_RUNS)
-                        .setNumberOfCores(8)
+                        .setNumberOfCores(3)
                         .build();
 
         new ExecuteAlgorithms<>(experiment).run();
@@ -89,11 +93,11 @@ public class EmasStudy {
             for (int i = 0; i < problemList.size(); i++) {
                 Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i),
                         emasParameters,
-                        new SBXCrossover(1.0, 5),
-                        new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 10.0),
+                        new SBXCrossover(1.0, 20.0),
+                        new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 20.0),
                         new DominanceComparator<>())
-                        .setMaxIterations(25000)
-                        .setPopulationSize(100)
+                        .setMaxIterations(1000)
+                        .setPopulationSize(200)
                         .build();
 
                 algorithms.add(new TaggedAlgorithm<>(algorithm, "EMASa", problemList.get(i), run));
@@ -105,8 +109,8 @@ public class EmasStudy {
                         new SBXCrossover(1.0, 20.0),
                         new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 20.0),
                         new DominanceComparator<>())
-                        .setMaxIterations(25000)
-                        .setPopulationSize(100)
+                        .setMaxIterations(400)
+                        .setPopulationSize(200)
                         .build();
 
                 algorithms.add(new TaggedAlgorithm<>(algorithm, "EMASb", problemList.get(i), run));
@@ -115,27 +119,14 @@ public class EmasStudy {
             for (int i = 0; i < problemList.size(); i++) {
                 Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i),
                         emasParameters,
-                        new SBXCrossover(1.0, 40.0),
-                        new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 40.0),
+                        new SBXCrossover(1.0, 20.0),
+                        new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 20.0),
                         new DominanceComparator<>())
-                        .setMaxIterations(25000)
-                        .setPopulationSize(100)
+                        .setMaxIterations(700)
+                        .setPopulationSize(200)
                         .build();
 
                 algorithms.add(new TaggedAlgorithm<>(algorithm, "EMASc", problemList.get(i), run));
-            }
-
-            for (int i = 0; i < problemList.size(); i++) {
-                Algorithm<List<DoubleSolution>> algorithm = new EmasBuilder<>(problemList.get(i),
-                        emasParameters,
-                        new SBXCrossover(1.0, 80.0),
-                        new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 80.0),
-                        new DominanceComparator<>())
-                        .setMaxIterations(25000)
-                        .setPopulationSize(100)
-                        .build();
-
-                algorithms.add(new TaggedAlgorithm<>(algorithm, "EMASd", problemList.get(i), run));
             }
         }
 
